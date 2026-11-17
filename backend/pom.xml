@@ -112,12 +112,12 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/openapi.yaml</inputSpec>                            <generatorName>spring</generatorName>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/openapi.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
                             <output>${project.build.directory}/generated-sources/character-api</output>
                             <apiPackage>ru.mycharacter.api.controllers</apiPackage>
                             <modelPackage>ru.mycharacter.api.models</modelPackage>
                             <invokerPackage>ru.mycharacter.api.invoker</invokerPackage>
-                            <ignoreFileOverride>${project.basedir}/.openapi-generator.ignore</ignoreFileOverride>
                             <configOptions>
                                 <useSpringBoot3>true</useSpringBoot3>
                                 <interfaceOnly>true</interfaceOnly>
