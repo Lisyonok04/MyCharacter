@@ -13,12 +13,13 @@ public class DevelopmentBranchEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "code", nullable = false, unique = true, length = 32)
     private String code;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false, length = 64)
     private String name;
 
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "is_active", nullable = false)

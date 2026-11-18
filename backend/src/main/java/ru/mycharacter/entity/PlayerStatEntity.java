@@ -16,10 +16,10 @@ public class PlayerStatEntity {
     @Column(name = "player_id", nullable = false)
     private Long playerId;
 
-    @Column(name = "stat_code", nullable = false)
+    @Column(name = "stat_code", nullable = false, length = 32)
     private String statCode;
 
-    @Column(name = "stat_name", nullable = false)
+    @Column(name = "stat_name", nullable = false, length = 64)
     private String statName;
 
     @Column(name = "current_value", nullable = false)

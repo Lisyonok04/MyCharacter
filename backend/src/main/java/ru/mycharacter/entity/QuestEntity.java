@@ -20,12 +20,13 @@ public class QuestEntity {
     @Column(name = "parent_quest_id")
     private Long parentQuestId;
 
-    @Column(nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false)
+    @Column(name = "difficulty", nullable = false)
     private Integer difficulty;
 
     @Column(name = "base_xp", nullable = false)

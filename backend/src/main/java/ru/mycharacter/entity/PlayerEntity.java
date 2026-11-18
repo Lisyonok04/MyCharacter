@@ -13,16 +13,16 @@ public class PlayerEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "nickname", nullable = false, unique = true, length = 64)
     private String nickname;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true, length = 128)
     private String email;
 
-    @Column(name = "character_name", nullable = false)
+    @Column(name = "character_name", nullable = false, length = 64)
     private String characterName;
 
-    @Column(nullable = false)
+    @Column(name = "level", nullable = false)
     private Integer level;
 
     @Column(name = "total_xp", nullable = false)
