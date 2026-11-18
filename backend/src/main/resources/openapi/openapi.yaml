@@ -50,7 +50,7 @@ components:
           example: 1
         nickname:
           type: string
-          example: "Sofia_Hero"
+          example: "Hero"
         characterName:
           type: string
           example: "Авантюрист"

@@ -1,11 +1,5 @@
---liquibase formatted sql
-
---changeset mycharacter:001-init-schema
 CREATE SCHEMA IF NOT EXISTS mc;
 
--- ==========================================
--- 1. СУЩНОСТЬ ИГРОКА И ЕГО ХАРАКТЕРИСТИКИ
--- ==========================================
 CREATE TABLE mc.players (
                             id BIGSERIAL PRIMARY KEY,
                             nickname VARCHAR(64) UNIQUE NOT NULL,
@@ -28,9 +22,6 @@ CREATE TABLE mc.player_stats (
                                  CONSTRAINT uq_player_stat UNIQUE (player_id, stat_code)
 );
 
--- ==========================================
--- 2. СФЕРЫ-ВЕТКИ, КВЕСТЫ И ИХ ХАРАКТЕРИСТИКИ
--- ==========================================
 CREATE TABLE mc.development_branches (
                                          id BIGSERIAL PRIMARY KEY,
                                          code VARCHAR(32) UNIQUE NOT NULL,

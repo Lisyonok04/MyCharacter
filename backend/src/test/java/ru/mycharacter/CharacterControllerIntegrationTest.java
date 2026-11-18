@@ -1,6 +1,5 @@
 package ru.mycharacter;
 
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,8 +21,10 @@ class CharacterControllerIntegrationTest {
         mockMvc.perform(get("/api/v1/character/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.nickname").value("Sofia_Hero"))
+                .andExpect(jsonPath("$.nickname").value("HelpMe"))
+                .andExpect(jsonPath("$.characterName").value("Авантюрист"))
                 .andExpect(jsonPath("$.level").value(3))
-                .andExpect(jsonPath("$.selectedCategories.length()").value(3));
+                .andExpect(jsonPath("$.stats.length()").value(3))
+                .andExpect(jsonPath("$.selectedBranches.length()").value(3));
     }
 }
