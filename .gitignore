@@ -1,6 +1,5 @@
 .idea
 .env
-
 # Локальные дампы БД
 /dumps/
 *.dump

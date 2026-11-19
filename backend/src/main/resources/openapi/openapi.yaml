@@ -1,0 +1,123 @@
+openapi: 3.0.3
+info:
+  title: My Character Core Service API
+  description: REST API для получения профиля игрока, его характеристик и веток развития
+  version: 1.0.0
+
+paths:
+  /api/v1/character/{id}:
+    get:
+      tags:
+        - Character
+      summary: Получить профиль игрока, его характеристики и ветки развития по ID
+      operationId: getCharacterById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID игрока
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Данные профиля игрока успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CharacterProfileResponse'
+        '404':
+          description: Игрок не найден
+
+components:
+  schemas:
+    CharacterProfileResponse:
+      type: object
+      required:
+        - id
+        - nickname
+        - characterName
+        - level
+        - totalXp
+        - nextLevelXp
+        - currentStreak
+        - stats
+        - selectedBranches
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        nickname:
+          type: string
+          example: "Hero"
+        characterName:
+          type: string
+          example: "Авантюрист"
+        level:
+          type: integer
+          example: 3
+        totalXp:
+          type: integer
+          example: 250
+        nextLevelXp:
+          type: integer
+          example: 519
+        currentStreak:
+          type: integer
+          example: 5
+        stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerStatDto'
+        selectedBranches:
+          type: array
+          items:
+            $ref: '#/components/schemas/BranchProgressDto'
+
+    PlayerStatDto:
+      type: object
+      required:
+        - statCode
+        - statName
+        - currentValue
+        - currentXp
+      properties:
+        statCode:
+          type: string
+          example: "STR"
+        statName:
+          type: string
+          example: "Сила и выносливость"
+        currentValue:
+          type: integer
+          example: 4
+        currentXp:
+          type: integer
+          example: 120
+
+    BranchProgressDto:
+      type: object
+      required:
+        - branchId
+        - code
+        - name
+        - branchLevel
+        - branchXp
+      properties:
+        branchId:
+          type: integer
+          format: int64
+          example: 1
+        code:
+          type: string
+          example: "FITNESS"
+        name:
+          type: string
+          example: "Спорт и здоровье"
+        branchLevel:
+          type: integer
+          example: 2
+        branchXp:
+          type: integer
+          example: 120
