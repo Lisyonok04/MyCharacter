@@ -9,6 +9,7 @@ import ru.mycharacter.api.models.BranchProgressDto;
 import ru.mycharacter.api.models.CharacterProfileResponse;
 import ru.mycharacter.api.models.PlayerStatDto;
 import ru.mycharacter.entity.PlayerEntity;
+import ru.mycharacter.helper.CharacterFormulaHelper;
 import ru.mycharacter.repository.PlayerBranchRepository;
 import ru.mycharacter.repository.PlayerRepository;
 import ru.mycharacter.repository.PlayerStatRepository;
@@ -49,7 +50,7 @@ public class CharacterService {
                 ))
                 .toList();
 
-        int nextLevelXp = (int) (100 * Math.pow(player.getLevel(), 1.5));
+        int nextLevelXp = CharacterFormulaHelper.calculateNextLevelXp(player.getLevel());
 
         return new CharacterProfileResponse(
                 player.getId(),
