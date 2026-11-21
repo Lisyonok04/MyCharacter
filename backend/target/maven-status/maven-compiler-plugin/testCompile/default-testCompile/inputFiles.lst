@@ -1,0 +1,5 @@
+/build/src/test/java/ru/mycharacter/CategoryControllerIntegrationTest.java
+/build/src/test/java/ru/mycharacter/CharacterControllerIntegrationTest.java
+/build/src/test/java/ru/mycharacter/CharacterFormulaHelperTest.java
+/build/src/test/java/ru/mycharacter/SkillControllerIntegrationTest.java
+/build/src/test/java/ru/mycharacter/TaskControllerIntegrationTest.java

@@ -1,0 +1,5 @@
+ru/mycharacter/CharacterFormulaHelperTest.class
+ru/mycharacter/SkillControllerIntegrationTest.class
+ru/mycharacter/TaskControllerIntegrationTest.class
+ru/mycharacter/CategoryControllerIntegrationTest.class
+ru/mycharacter/CharacterControllerIntegrationTest.class

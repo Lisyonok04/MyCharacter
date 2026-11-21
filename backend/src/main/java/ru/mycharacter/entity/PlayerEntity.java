@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "players", schema = "mc")
 @Getter
@@ -30,4 +32,7 @@ public class PlayerEntity {
 
     @Column(name = "current_streak", nullable = false)
     private Integer currentStreak;
+
+    @Column(name = "last_active_date")
+    private LocalDate lastActiveDate;
 }

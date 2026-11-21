@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
   title: My Character Core Service API
-  description: REST API для получения профиля игрока, его характеристик и веток развития
-  version: 1.0.0
+  description: REST API для профиля игрока, категорий развития, заданий и дерева навыков
+  version: 1.1.0
 
 paths:
   /api/v1/character/{id}:
@@ -29,6 +29,127 @@ paths:
         '404':
           description: Игрок не найден
 
+  /api/v1/categories:
+    get:
+      tags:
+        - Category
+      summary: Получить каталог доступных категорий развития
+      operationId: getAvailableCategories
+      parameters:
+        - name: playerId
+          in: query
+          required: false
+          description: ID игрока, чтобы отметить уже выбранные категории
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Каталог категорий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryListResponse'
+
+  /api/v1/character/categories:
+    post:
+      tags:
+        - Category
+      summary: Выбрать до трёх категорий развития
+      operationId: selectCategories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategorySelectionRequest'
+      responses:
+        '200':
+          description: Категории сохранены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategorySelectionResponse'
+        '400':
+          description: Нарушен лимит в 3 категории или переданы неверные данные
+
+  /api/v1/tasks:
+    get:
+      tags:
+        - Task
+      summary: Получить задания с отметкой о выполнении за сегодня
+      operationId: getTasks
+      parameters:
+        - name: playerId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: branchId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Список заданий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskListResponse'
+
+  /api/v1/tasks/{id}/complete:
+    post:
+      tags:
+        - Task
+      summary: Отметить задание выполненным и начислить XP
+      operationId: completeTask
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskRequest'
+      responses:
+        '200':
+          description: Задание засчитано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompleteTaskResponse'
+        '409':
+          description: Задание уже выполнено сегодня
+
+  /api/v1/skills:
+    get:
+      tags:
+        - Skill
+      summary: Получить дерево навыков и статусы разблокировки
+      operationId: getSkillTree
+      parameters:
+        - name: playerId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Дерево навыков
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillTreeResponse'
+
 components:
   schemas:
     CharacterProfileResponse:
@@ -40,6 +161,9 @@ components:
         - level
         - totalXp
         - nextLevelXp
+        - xpIntoLevel
+        - xpForNextLevel
+        - progressPercent
         - currentStreak
         - stats
         - selectedBranches
@@ -59,10 +183,23 @@ components:
           example: 3
         totalXp:
           type: integer
-          example: 250
+          example: 300
         nextLevelXp:
           type: integer
-          example: 519
+          example: 520
+          description: Суммарный XP, необходимый для следующего уровня
+        xpIntoLevel:
+          type: integer
+          example: 17
+          description: Сколько XP набрано внутри текущего уровня
+        xpForNextLevel:
+          type: integer
+          example: 237
+          description: Сколько XP нужно набрать внутри текущего уровня до следующего
+        progressPercent:
+          type: integer
+          example: 7
+          description: Прогресс до следующего уровня в процентах (0-100)
         currentStreak:
           type: integer
           example: 5
@@ -121,3 +258,292 @@ components:
         branchXp:
           type: integer
           example: 120
+
+    CategoryDto:
+      type: object
+      required:
+        - branchId
+        - code
+        - name
+        - selected
+      properties:
+        branchId:
+          type: integer
+          format: int64
+          example: 1
+        code:
+          type: string
+          example: "FITNESS"
+        name:
+          type: string
+          example: "Спорт и здоровье"
+        description:
+          type: string
+          example: "Физические тренировки, бег, режим и выносливость"
+        selected:
+          type: boolean
+          example: true
+
+    CategoryListResponse:
+      type: object
+      required:
+        - categories
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryDto'
+
+    CategorySelectionRequest:
+      type: object
+      required:
+        - playerId
+        - branchIds
+      properties:
+        playerId:
+          type: integer
+          format: int64
+          example: 1
+        branchIds:
+          type: array
+          minItems: 1
+          maxItems: 3
+          items:
+            type: integer
+            format: int64
+          example: [1, 2, 3]
+
+    CategorySelectionResponse:
+      type: object
+      required:
+        - playerId
+        - selectedBranches
+      properties:
+        playerId:
+          type: integer
+          format: int64
+          example: 1
+        selectedBranches:
+          type: array
+          items:
+            $ref: '#/components/schemas/BranchProgressDto'
+
+    TaskDto:
+      type: object
+      required:
+        - id
+        - branchId
+        - branchCode
+        - branchName
+        - title
+        - difficulty
+        - baseXp
+        - completedToday
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        branchId:
+          type: integer
+          format: int64
+          example: 1
+        branchCode:
+          type: string
+          example: "FITNESS"
+        branchName:
+          type: string
+          example: "Спорт и здоровье"
+        title:
+          type: string
+          example: "Утренняя пробежка 3 км"
+        description:
+          type: string
+          example: "Пробежать дистанцию 3 км в комфортном темпе"
+        difficulty:
+          type: integer
+          example: 2
+        baseXp:
+          type: integer
+          example: 40
+        completedToday:
+          type: boolean
+          example: false
+
+    TaskListResponse:
+      type: object
+      required:
+        - tasks
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskDto'
+
+    CompleteTaskRequest:
+      type: object
+      required:
+        - playerId
+      properties:
+        playerId:
+          type: integer
+          format: int64
+          example: 1
+
+    StatChangeDto:
+      type: object
+      required:
+        - statCode
+        - statName
+        - addedValue
+        - newValue
+        - addedXp
+        - newXp
+      properties:
+        statCode:
+          type: string
+          example: "STR"
+        statName:
+          type: string
+          example: "Сила и выносливость"
+        addedValue:
+          type: integer
+          example: 2
+        newValue:
+          type: integer
+          example: 6
+        addedXp:
+          type: integer
+          example: 48
+        newXp:
+          type: integer
+          example: 168
+
+    CompleteTaskResponse:
+      type: object
+      required:
+        - taskId
+        - taskTitle
+        - xpAwarded
+        - totalXp
+        - level
+        - oldLevel
+        - newLevel
+        - levelUp
+        - currentStreak
+        - nextLevelXp
+        - xpIntoLevel
+        - xpForNextLevel
+        - progressPercent
+        - statChanges
+      properties:
+        taskId:
+          type: integer
+          format: int64
+          example: 1
+        taskTitle:
+          type: string
+          example: "Утренняя пробежка 3 км"
+        xpAwarded:
+          type: integer
+          example: 48
+        totalXp:
+          type: integer
+          example: 348
+        level:
+          type: integer
+          example: 3
+        oldLevel:
+          type: integer
+          example: 3
+        newLevel:
+          type: integer
+          example: 3
+        levelUp:
+          type: boolean
+          example: false
+        currentStreak:
+          type: integer
+          example: 6
+        nextLevelXp:
+          type: integer
+          example: 520
+        xpIntoLevel:
+          type: integer
+          example: 65
+        xpForNextLevel:
+          type: integer
+          example: 237
+        progressPercent:
+          type: integer
+          example: 27
+        statChanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatChangeDto'
+
+    SkillNodeDto:
+      type: object
+      required:
+        - id
+        - branchId
+        - branchCode
+        - branchName
+        - code
+        - name
+        - requiredBranchLevel
+        - requiredPlayerLevel
+        - status
+        - dependencies
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        branchId:
+          type: integer
+          format: int64
+          example: 1
+        branchCode:
+          type: string
+          example: "FITNESS"
+        branchName:
+          type: string
+          example: "Спорт и здоровье"
+        code:
+          type: string
+          example: "FIT_START"
+        name:
+          type: string
+          example: "Первый шаг"
+        description:
+          type: string
+          example: "Базовые тренировки и режим"
+        requiredBranchLevel:
+          type: integer
+          example: 1
+        requiredPlayerLevel:
+          type: integer
+          example: 1
+        status:
+          type: string
+          enum: [UNLOCKED, AVAILABLE, LOCKED]
+          example: "UNLOCKED"
+        dependencies:
+          type: array
+          items:
+            type: integer
+            format: int64
+        sortOrder:
+          type: integer
+          example: 1
+
+    SkillTreeResponse:
+      type: object
+      required:
+        - nodes
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillNodeDto'

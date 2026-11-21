@@ -1,8 +1,6 @@
-FROM bellsoft/liberica-openjdk-debian:25 AS builder
+FROM maven:3.9-eclipse-temurin-25 AS builder
 
 WORKDIR /build
-
-RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
 
 COPY pom.xml .
 

@@ -31,37 +31,45 @@ public class CharacterService {
 
         List<PlayerStatDto> stats = playerStatRepository.findByPlayerId(playerId)
                 .stream()
-                .map(stat -> new PlayerStatDto(
-                        stat.getStatCode(),
-                        stat.getStatName(),
-                        stat.getCurrentValue(),
-                        stat.getCurrentXp()
-                ))
+                .map(stat -> {
+                    PlayerStatDto dto = new PlayerStatDto();
+                    dto.setStatCode(stat.getStatCode());
+                    dto.setStatName(stat.getStatName());
+                    dto.setCurrentValue(stat.getCurrentValue());
+                    dto.setCurrentXp(stat.getCurrentXp());
+                    return dto;
+                })
                 .toList();
 
         List<BranchProgressDto> branches = playerBranchRepository.findByPlayerId(playerId)
                 .stream()
-                .map(pb -> new BranchProgressDto(
-                        pb.getBranch().getId(),
-                        pb.getBranch().getCode(),
-                        pb.getBranch().getName(),
-                        pb.getBranchLevel(),
-                        pb.getBranchXp()
-                ))
+                .map(pb -> {
+                    BranchProgressDto dto = new BranchProgressDto();
+                    dto.setBranchId(pb.getBranch().getId());
+                    dto.setCode(pb.getBranch().getCode());
+                    dto.setName(pb.getBranch().getName());
+                    dto.setBranchLevel(pb.getBranchLevel());
+                    dto.setBranchXp(pb.getBranchXp());
+                    return dto;
+                })
                 .toList();
 
-        int nextLevelXp = CharacterFormulaHelper.calculateNextLevelXp(player.getLevel());
+        int level = player.getLevel();
+        int totalXp = player.getTotalXp();
 
-        return new CharacterProfileResponse(
-                player.getId(),
-                player.getNickname(),
-                player.getCharacterName(),
-                player.getLevel(),
-                player.getTotalXp(),
-                nextLevelXp,
-                player.getCurrentStreak(),
-                stats,
-                branches
-        );
+        CharacterProfileResponse response = new CharacterProfileResponse();
+        response.setId(player.getId());
+        response.setNickname(player.getNickname());
+        response.setCharacterName(player.getCharacterName());
+        response.setLevel(level);
+        response.setTotalXp(totalXp);
+        response.setNextLevelXp(CharacterFormulaHelper.calculateNextLevelXp(level));
+        response.setXpIntoLevel(CharacterFormulaHelper.calculateXpIntoLevel(totalXp, level));
+        response.setXpForNextLevel(CharacterFormulaHelper.calculateXpForNextLevel(level));
+        response.setProgressPercent(CharacterFormulaHelper.calculateProgressPercent(totalXp, level));
+        response.setCurrentStreak(player.getCurrentStreak());
+        response.setStats(stats);
+        response.setSelectedBranches(branches);
+        return response;
     }
 }
